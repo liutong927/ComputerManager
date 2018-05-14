@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     this->setObjectName(QStringLiteral("ToolSet"));
     this->setWindowTitle("ToolSet");
-    this->resize(1000, 800);
+    this->resize(800, 600);
 
     // create central widget
     centralWidget = new QWidget(this);
@@ -22,11 +22,21 @@ MainWindow::MainWindow(QWidget *parent)
     dailyArrangement->setObjectName(QStringLiteral("dailyArrangement"));
     dailyArrangement->setGeometry(490,10,500,450);
 
+    QStringList header;
+    header.push_back("事项");
+    dailyArrangement->setHorizontalHeaderLabels(header);
+    dailyArrangement->setColumnWidth(0,450);
+
     // layout
     hLayout = new QHBoxLayout(centralWidget);
     hLayout->addWidget(calendarWidget);
     hLayout->addSpacing(20);
     hLayout->addWidget(dailyArrangement);
+
+    // signal and slot
+    // click date in calendarWidget to fetch tableData from this date.
+    // we only have one tableWidget, but its data varies by date.
+    connect(calendarWidget,SIGNAL(clicked(QDate)),dailyArrangement,SLOT(clear()));
 }
 
 MainWindow::~MainWindow()

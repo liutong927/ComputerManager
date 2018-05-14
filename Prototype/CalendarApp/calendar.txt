@@ -1,0 +1,13 @@
+calendar App UI definitions:
+
+#using QT calendar widget;
+
+#daily arrangement widget
+1.use tabelwiget to display items of date? default is 5 items;
+2.can add/delete items;
+3.save daily arrangement to database;
+4.can search item by keywords, show ordering items in a pop-up list widget, click item can goto that date.
+5.click date to goto each daily arrangment of that date;
+6.can set reminder of item;
+7.to mark date in calendar widget if it has non-empty arrangment;
+8.can export selected item in some format to e-mail;
