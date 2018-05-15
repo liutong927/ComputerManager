@@ -6,6 +6,7 @@
 #include <QCalendarWidget>
 #include <QTableWidget>
 #include <QHBoxLayout>
+#include <QSqlTableModel>
 
 class MainWindow : public QMainWindow
 {
@@ -19,6 +20,8 @@ private:
     QCalendarWidget* calendarWidget;
     QTableWidget* dailyArrangement;
     QHBoxLayout* hLayout;
+
+    QSqlTableModel* model;
 };
 
 #endif // MAINWINDOW_H

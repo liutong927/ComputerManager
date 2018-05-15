@@ -33,10 +33,20 @@ MainWindow::MainWindow(QWidget *parent)
     hLayout->addSpacing(20);
     hLayout->addWidget(dailyArrangement);
 
+    // sql model
+    model = new QSqlTableModel(dailyArrangement);
+    model->setTable("dailyArrangement");
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
+    model->setHeaderData(0, Qt::Horizontal, tr("Index"));
+    model->setHeaderData(1, Qt::Horizontal, tr("Item"));
+
+
     // signal and slot
     // click date in calendarWidget to fetch tableData from this date.
     // we only have one tableWidget, but its data varies by date.
     connect(calendarWidget,SIGNAL(clicked(QDate)),dailyArrangement,SLOT(clear()));
+
 }
 
 MainWindow::~MainWindow()
