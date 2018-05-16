@@ -112,6 +112,13 @@ static bool createConnection()
     query.exec("insert into images values(2, 'images/qt-creator.png')");
     query.exec("insert into images values(3, 'images/qt-project.png')");
 
+    //for calendar widget
+    query.exec("create dailyArrangement (date int, index int, item varchar(20))");
+    query.exec("insert into dailyArrangement values(100, 0, 'test1')");
+    query.exec("insert into dailyArrangement values(200, 1, 'test2')");
+    query.exec("insert into dailyArrangement values(300, 2, 'test3')");
+    query.exec("insert into dailyArrangement values(400, 3, 'test4')");
+
     return true;
 }
 //! [0]

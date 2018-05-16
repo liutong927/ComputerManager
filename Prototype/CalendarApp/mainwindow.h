@@ -15,6 +15,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+public Q_SLOT:
+    void PopulateSelectedDate();
+
+private:
+    void AddArrangmentToDB();
+
 private:
     QWidget* centralWidget;
     QCalendarWidget* calendarWidget;
