@@ -11,3 +11,10 @@ calendar App UI definitions:
 6.can set reminder of item;
 7.to mark date in calendar widget if it has non-empty arrangment;
 8.can export selected item in some format to e-mail;
+
+#2018/05/17
+1.use QTableView to bind to data model which is database data in this case;
+  model/view framework to easily show various views of one model.
+  QTableWidget has private setModel, cannot be used to set our own model.
+2.should not create in-memory database, but persistent db file?
+  use setDatabaseName to create in-memory and in-disk db file.

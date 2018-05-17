@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QCalendarWidget>
-#include <QTableWidget>
+#include <QTableView>
 #include <QHBoxLayout>
 #include <QSqlTableModel>
 
@@ -16,16 +16,16 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public Q_SLOT:
+public slots:
     void PopulateSelectedDate();
 
 private:
-    void AddArrangmentToDB();
+    void AddRecordToDB();
 
 private:
     QWidget* centralWidget;
     QCalendarWidget* calendarWidget;
-    QTableWidget* dailyArrangement;
+    QTableView* dailyArrangement;
     QHBoxLayout* hLayout;
 
     QSqlTableModel* model;
