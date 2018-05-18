@@ -51,21 +51,31 @@ MainWindow::MainWindow(QWidget *parent)
     // signal and slot
     // click date in calendarWidget to fetch tableData from this date.
     // we only have one tableView, but its data varies by date.
-    connect(calendarWidget,SIGNAL(clicked(QDate)),this,SLOT(PopulateSelectedDate()));
+    connect(calendarWidget,SIGNAL(clicked(QDate)),this,SLOT(OnClickDate()));
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::PopulateSelectedDate()
+void MainWindow::OnClickDate()
 {
     auto selectedDate = calendarWidget->selectedDate();
-    model->setFilter(QObject::tr("Date= %1").arg("20180520"));
+    PopulateDate(selectedDate);
+
+    // if empty, insert one empty record to display in view for edit.
+    AddRecordToDB(QString(""));
+}
+
+void MainWindow::PopulateDate(QDate& date)
+{
+    // Note: now use varchar to store Date for compare with QDate string.
+    // sql date is not easily to compare.
+    model->setFilter(QObject::tr("Date = '%1'").arg(date.toString(Qt::ISODate)));
     model->select();
 }
 
-void MainWindow::AddRecordToDB()
+void MainWindow::AddRecordToDB(const QString& itemString)
 {
     auto selectedDate = calendarWidget->selectedDate();
 
@@ -73,5 +83,5 @@ void MainWindow::AddRecordToDB()
     model->insertRows(currentRow, 1);
     model->setData(model->index(currentRow,ColumnDate), selectedDate);
     model->setData(model->index(currentRow,ColumnIndx), currentRow);
-    model->setData(model->index(currentRow,ColumnItem), "xxx");
+    model->setData(model->index(currentRow,ColumnItem), itemString);
 }

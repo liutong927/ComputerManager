@@ -17,10 +17,11 @@ public:
     ~MainWindow();
 
 public slots:
-    void PopulateSelectedDate();
+    void OnClickDate();
 
 private:
-    void AddRecordToDB();
+    void PopulateDate(QDate& date);
+    void AddRecordToDB(const QString& itemString);
 
 private:
     QWidget* centralWidget;
