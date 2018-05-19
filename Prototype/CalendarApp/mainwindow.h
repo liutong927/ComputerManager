@@ -17,11 +17,14 @@ public:
     ~MainWindow();
 
 public slots:
-    void OnClickDate();
+    void OnDateActivated();
+    void OnCalendarPageChanged();
 
 private:
-    void PopulateDate(QDate& date);
+    bool PopulateDate(QDate& date);
     void AddRecordToDB(const QString& itemString);
+
+    QVector<QDate> GetArrangedDatesOfMonth(QDate date);
 
 private:
     QWidget* centralWidget;

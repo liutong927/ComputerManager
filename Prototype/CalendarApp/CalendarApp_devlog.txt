@@ -18,3 +18,8 @@ calendar App UI definitions:
   QTableWidget has private setModel, cannot be used to set our own model.
 2.should not create in-memory database, but persistent db file?
   use setDatabaseName to create in-memory and in-disk db file.
+
+#2018/05/18
+1.alway keep current table view has one empty row at end of table, for easily edit one new record.
+  this will avoid providing "Insert row" functionality in UI.
+  also means when add a new row and submit to db, we will create an empty one.
