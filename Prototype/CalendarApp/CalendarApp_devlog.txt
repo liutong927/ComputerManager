@@ -23,3 +23,8 @@ calendar App UI definitions:
 1.alway keep current table view has one empty row at end of table, for easily edit one new record.
   this will avoid providing "Insert row" functionality in UI.
   also means when add a new row and submit to db, we will create an empty one.
+
+#2018/05/20
+1.do not insert empty row by default. This may leads complicated implementation.
+  adding pushbutton of Add/Delete/Search to invoke command. this will help create more complicated operation for single command.
+  e.g, specify date range for search, create reminder for Adding item.

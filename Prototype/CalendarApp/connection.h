@@ -32,13 +32,13 @@ static bool createConnection()
     // create table
     // note index seems a keyword of sql, should not write like this:
     // query.exec("create table dailyArrangement (date int primary key, index int, item varchar(20))");
-    query.exec("create table dailyArrangement (Date varchar(15) primary key, Id int, Item varchar(255))");
-    query.exec("insert into dailyArrangement values('2018-05-01', 0, 'test1')");
-    query.exec("insert into dailyArrangement values('2018-05-17', 0, 'test1')");
-    query.exec("insert into dailyArrangement values('2018-05-18', 1, 'test2')");
-    query.exec("insert into dailyArrangement values('2018-05-19', 2, 'test3')");
-    query.exec("insert into dailyArrangement values('2018-05-20', 3, 'test4')");
-    query.exec("insert into dailyArrangement values('2018-05-31', 3, 'test4')");
+    query.exec("create table dailyArrangement (Date varchar(15) primary key, Item varchar(255))");
+    query.exec("insert into dailyArrangement values('2018-05-01', 'test1')");
+    query.exec("insert into dailyArrangement values('2018-05-17', 'test1')");
+    query.exec("insert into dailyArrangement values('2018-05-18', 'test2')");
+    query.exec("insert into dailyArrangement values('2018-05-19', 'test3')");
+    query.exec("insert into dailyArrangement values('2018-05-20', 'test4')");
+    query.exec("insert into dailyArrangement values('2018-05-31', 'test4')");
 
     return true;
 }
