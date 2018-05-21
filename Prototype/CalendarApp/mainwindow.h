@@ -21,6 +21,7 @@ public:
 public slots:
     void OnDateActivated();
     void OnCalendarPageChanged();
+    void OnAddItemClicked();
 
 private:
     bool PopulateDate(QDate& date);

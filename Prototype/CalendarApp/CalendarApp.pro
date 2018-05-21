@@ -25,8 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    additemdialog.cpp
 
 HEADERS += \
         mainwindow.h \
-    connection.h
+    connection.h \
+    additemdialog.h
+
+FORMS += \
+    additemdialog.ui

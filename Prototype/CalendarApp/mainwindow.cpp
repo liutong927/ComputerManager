@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include <additemdialog.h>
+#include <QSqlQuery>
 #include <QSqlRecord>
 #include <QDebug>
 #include <QTextCharFormat>
@@ -74,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(calendarWidget,SIGNAL(selectionChanged()),this,SLOT(OnDateActivated()));
     // calendar month page changed, highlight date if has non-empty records.
     connect(calendarWidget,SIGNAL(currentPageChanged(int,int)),this,SLOT(OnCalendarPageChanged()));
+    // button AddItem
+    connect(addBtn,SIGNAL(clicked(bool)),this,SLOT(OnAddItemClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -102,6 +106,12 @@ void MainWindow::OnCalendarPageChanged()
         format.setBackground(Qt::gray);
         calendarWidget->setDateTextFormat(date,format);
     }
+}
+
+void MainWindow::OnAddItemClicked()
+{
+    AddItemDialog* addDlg = new AddItemDialog;
+    addDlg->show();
 }
 
 bool MainWindow::PopulateDate(QDate& date)
@@ -138,20 +148,33 @@ QVector<QDate> MainWindow::GetArrangedDatesOfMonth(QDate& date)
     int daysOfMonth = date.daysInMonth();
     QDate fromDate(year,month,1);
     QDate toDate(year,month,daysOfMonth);
-    auto oldFilter = model->filter();
-    model->setFilter(QObject::tr("Date >= '%1' and Date <= '%2'").arg(fromDate.toString(Qt::ISODate)).arg(toDate.toString(Qt::ISODate)));
 
-    int rowCount = model->rowCount();
+//    auto oldFilter = model->filter();
+//    model->setFilter(QObject::tr("Date >= '%1' and Date <= '%2'").arg(fromDate.toString(Qt::ISODate)).arg(toDate.toString(Qt::ISODate)));
+//    int rowCount = model->rowCount();
+//    QVector<QDate> dateVec;
+//    for(int row = 0; row < rowCount; ++row)
+//    {
+//        QVariant dateFromDB = model->data(model->index(row,0));
+//        QDate date(QDate::fromString(dateFromDB.toString(),Qt::ISODate)); // contruct date from string.
+//        dateVec.push_back(date);
+//    }
+
+//    //need to reset to old filter, otherwise new filter results will be shown, here we just want filtered data.
+//    model->setFilter(oldFilter);
+
+    // use local QSqlQuery variable to execute select on db, this will avoid using class member model
+    // which will change global QSQLTableModel object. Here we just want to access data not change model.
     QVector<QDate> dateVec;
-    for(int row = 0; row < rowCount; ++row)
+    QString sql = tr("SELECT * FROM dailyArrangement WHERE Date >= '%1' and Date <= '%2'")
+            .arg(fromDate.toString(Qt::ISODate)).arg(toDate.toString(Qt::ISODate));
+    QSqlQuery query(sql);
+    while(query.next())
     {
-        QVariant dateFromDB = model->data(model->index(row,0));
+        QVariant dateFromDB = query.value(0);
         QDate date(QDate::fromString(dateFromDB.toString(),Qt::ISODate)); // contruct date from string.
         dateVec.push_back(date);
     }
-
-    //need to reset to old filter, otherwise new filter results will be shown, here we just want filtered data.
-    model->setFilter(oldFilter);
 
     return dateVec;
 }
