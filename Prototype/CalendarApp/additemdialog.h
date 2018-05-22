@@ -2,10 +2,13 @@
 #define ADDITEMDIALOG_H
 
 #include <QDialog>
-
-namespace Ui {
-class AddItemDialog;
-}
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QDateEdit>
+#include <QLabel>
+#include <QPlainTextEdit>
+#include <QDialogButtonBox>
 
 class AddItemDialog : public QDialog
 {
@@ -15,8 +18,18 @@ public:
     explicit AddItemDialog(QWidget *parent = 0);
     ~AddItemDialog();
 
+    void SetDate(QDate& date);
+
 private:
-    Ui::AddItemDialog *ui;
+    QWidget* centralWidget;
+    QVBoxLayout* verticalLayout;
+    QHBoxLayout* dateHLayout;
+    QLabel* dateLabel;
+    QDateEdit* dateEdit;
+    QHBoxLayout* itemHLayout;
+    QLabel* itemLabel;
+    QPlainTextEdit* plainTextEdit;
+    QDialogButtonBox* buttonBox;
 };
 
 #endif // ADDITEMDIALOG_H

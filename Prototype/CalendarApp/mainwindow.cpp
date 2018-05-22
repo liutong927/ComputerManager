@@ -111,6 +111,7 @@ void MainWindow::OnCalendarPageChanged()
 void MainWindow::OnAddItemClicked()
 {
     AddItemDialog* addDlg = new AddItemDialog;
+    addDlg->SetDate(calendarWidget->selectedDate());
     addDlg->show();
 }
 

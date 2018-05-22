@@ -32,6 +32,3 @@ HEADERS += \
         mainwindow.h \
     connection.h \
     additemdialog.h
-
-FORMS += \
-    additemdialog.ui
