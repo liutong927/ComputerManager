@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <QSqlTableModel>
 #include <QPushButton>
+#include <additemdialog.h>
 
 class MainWindow : public QMainWindow
 {
@@ -22,10 +23,11 @@ public slots:
     void OnDateActivated();
     void OnCalendarPageChanged();
     void OnAddItemClicked();
+    void OnAddItemCommit();
 
 private:
     bool PopulateDate(QDate& date);
-    void AddRecordToDB(const QString& itemString);
+    void AddRecordToDB(const QDate& date, const QString& itemString);
 
     QVector<QDate> GetArrangedDatesOfMonth(QDate& date);
 
@@ -39,6 +41,7 @@ private:
     QPushButton* addBtn;
     QPushButton* deleteBtn;
     QPushButton* searchBtn;
+    AddItemDialog* addDlg;
 
     QSqlTableModel* model;
 };

@@ -19,6 +19,8 @@ public:
     ~AddItemDialog();
 
     void SetDate(QDate& date);
+    QDate GetCurrentDateInDialog();
+    QString GetItemText();
 
 private:
     QWidget* centralWidget;

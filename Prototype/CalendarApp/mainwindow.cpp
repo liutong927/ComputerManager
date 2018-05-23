@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include <additemdialog.h>
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QDebug>
@@ -110,9 +109,17 @@ void MainWindow::OnCalendarPageChanged()
 
 void MainWindow::OnAddItemClicked()
 {
-    AddItemDialog* addDlg = new AddItemDialog;
+    addDlg = new AddItemDialog(this);
     addDlg->SetDate(calendarWidget->selectedDate());
     addDlg->show();
+}
+
+void MainWindow::OnAddItemCommit()
+{
+    auto currentDate = addDlg->GetCurrentDateInDialog();
+    auto itemString = addDlg->GetItemText();
+
+    this->AddRecordToDB(currentDate, itemString);
 }
 
 bool MainWindow::PopulateDate(QDate& date)
@@ -126,13 +133,11 @@ bool MainWindow::PopulateDate(QDate& date)
     return (model->rowCount() != 0);
 }
 
-void MainWindow::AddRecordToDB(const QString& itemString)
+void MainWindow::AddRecordToDB(const QDate& date, const QString& itemString)
 {
-    auto selectedDate = calendarWidget->selectedDate();
-
     int currentRow = model->rowCount();
     model->insertRows(currentRow, 1);
-    model->setData(model->index(currentRow,ColumnDate), selectedDate.toString(Qt::ISODate));
+    model->setData(model->index(currentRow,ColumnDate), date.toString(Qt::ISODate));
     model->setData(model->index(currentRow,ColumnItem), itemString);
 
     // only if item is not empty, we submit it.

@@ -54,6 +54,7 @@ AddItemDialog::AddItemDialog(QWidget *parent) :
     // signal and slot
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    QObject::connect(buttonBox, SIGNAL(accepted()), this->parent(), SLOT(OnAddItemCommit()));
 
 
 }
@@ -65,4 +66,14 @@ AddItemDialog::~AddItemDialog()
 void AddItemDialog::SetDate(QDate &date)
 {
     dateEdit->setDate(date);
+}
+
+QDate AddItemDialog::GetCurrentDateInDialog()
+{
+    return dateEdit->date();
+}
+
+QString AddItemDialog::GetItemText()
+{
+    return plainTextEdit->toPlainText();
 }
