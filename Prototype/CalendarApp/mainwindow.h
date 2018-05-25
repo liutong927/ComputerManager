@@ -27,8 +27,9 @@ public slots:
 
 private:
     bool PopulateDate(QDate& date);
-    void AddRecordToDB(const QDate& date, const QString& itemString);
+    bool AddRecordToDB(const QDate& date, const QString& itemString);
 
+    void MarkDateArranged(QDate& date);
     QVector<QDate> GetArrangedDatesOfMonth(QDate& date);
 
 private:

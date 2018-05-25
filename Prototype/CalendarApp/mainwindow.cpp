@@ -3,9 +3,12 @@
 #include <QSqlRecord>
 #include <QDebug>
 #include <QTextCharFormat>
+#include <QMessageBox>
+#include <QSqlError>
 
 enum ColumnIndex
 {
+    ColumnId,
     ColumnDate,
     ColumnItem
 };
@@ -58,10 +61,13 @@ MainWindow::MainWindow(QWidget *parent)
     model->setTable("dailyArrangement");
     // apply OnRowChange or OnFieldChange will submit to db directly if modify row/field.
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->setHeaderData(0, Qt::Horizontal, tr("date"));
-    model->setHeaderData(1, Qt::Horizontal, tr("item"));
+    model->setHeaderData(ColumnDate, Qt::Horizontal, tr("date"));
+    model->setHeaderData(ColumnItem, Qt::Horizontal, tr("item"));
 
     dailyArrangement->setModel(model);
+    // hide column only takes effect after setmodel.
+    dailyArrangement->hideColumn(ColumnId);
+    dailyArrangement->hideColumn(ColumnDate);
 
     OnDateActivated();// show current date data.
     OnCalendarPageChanged(); // highlight current page arranged dates.
@@ -101,9 +107,7 @@ void MainWindow::OnCalendarPageChanged()
     QVector<QDate> dateVec(GetArrangedDatesOfMonth(currentSelectedDate));
     for(auto date: dateVec)
     {
-        QTextCharFormat format;
-        format.setBackground(Qt::gray);
-        calendarWidget->setDateTextFormat(date,format);
+        MarkDateArranged(date);
     }
 }
 
@@ -119,7 +123,13 @@ void MainWindow::OnAddItemCommit()
     auto currentDate = addDlg->GetCurrentDateInDialog();
     auto itemString = addDlg->GetItemText();
 
-    this->AddRecordToDB(currentDate, itemString);
+    if(AddRecordToDB(currentDate, itemString))
+    {
+        // issue: when focus is still on tableview, calendarwidget does not get updated immediately.
+        // so here set focus to calendar firstly.
+        calendarWidget->setFocus();
+        MarkDateArranged(currentDate);
+    }
 }
 
 bool MainWindow::PopulateDate(QDate& date)
@@ -133,8 +143,10 @@ bool MainWindow::PopulateDate(QDate& date)
     return (model->rowCount() != 0);
 }
 
-void MainWindow::AddRecordToDB(const QDate& date, const QString& itemString)
+bool MainWindow::AddRecordToDB(const QDate& date, const QString& itemString)
 {
+    Q_ASSERT(date.isValid());
+    bool isSuccess = false;
     int currentRow = model->rowCount();
     model->insertRows(currentRow, 1);
     model->setData(model->index(currentRow,ColumnDate), date.toString(Qt::ISODate));
@@ -143,8 +155,23 @@ void MainWindow::AddRecordToDB(const QDate& date, const QString& itemString)
     // only if item is not empty, we submit it.
     if(!itemString.isNull() && !itemString.isEmpty())
     {
-        model->submitAll();
+        isSuccess = model->submitAll();
+        if(!isSuccess)
+        {
+            auto error = model->lastError();
+            QMessageBox::critical(this, tr("SQL Error"), error.text());
+            model->revertAll();
+        }
     }
+
+    return isSuccess;
+}
+
+void MainWindow::MarkDateArranged(QDate &date)
+{
+    QTextCharFormat format;
+    format.setBackground(Qt::gray);
+    calendarWidget->setDateTextFormat(date,format);
 }
 
 QVector<QDate> MainWindow::GetArrangedDatesOfMonth(QDate& date)
@@ -177,7 +204,7 @@ QVector<QDate> MainWindow::GetArrangedDatesOfMonth(QDate& date)
     QSqlQuery query(sql);
     while(query.next())
     {
-        QVariant dateFromDB = query.value(0);
+        QVariant dateFromDB = query.value(ColumnDate);
         QDate date(QDate::fromString(dateFromDB.toString(),Qt::ISODate)); // contruct date from string.
         dateVec.push_back(date);
     }

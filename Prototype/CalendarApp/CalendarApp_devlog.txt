@@ -28,3 +28,7 @@ calendar App UI definitions:
 1.do not insert empty row by default. This may leads complicated implementation.
   adding pushbutton of Add/Delete/Search to invoke command. this will help create more complicated operation for single command.
   e.g, specify date range for search, create reminder for Adding item.
+
+#2018/05/25
+1.Now sql table use Date as primary key, the unique constraint disallows to create multiple items for same date.
+  use another primary key like index? Or do not use primary key at all?

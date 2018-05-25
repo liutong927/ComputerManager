@@ -55,8 +55,6 @@ AddItemDialog::AddItemDialog(QWidget *parent) :
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     QObject::connect(buttonBox, SIGNAL(accepted()), this->parent(), SLOT(OnAddItemCommit()));
-
-
 }
 
 AddItemDialog::~AddItemDialog()
