@@ -15,12 +15,16 @@ class AddItemDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddItemDialog(QWidget *parent = 0);
+    explicit AddItemDialog(QWidget *parent = 0, bool isEdit=false);
     ~AddItemDialog();
 
     void SetDate(QDate& date);
     QDate GetCurrentDateInDialog();
     QString GetItemText();
+    void SetItemText(QString& text);
+
+public slots:
+    void OnTextChanged();
 
 private:
     QWidget* centralWidget;

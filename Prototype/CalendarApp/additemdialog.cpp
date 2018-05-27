@@ -1,11 +1,14 @@
 #include "additemdialog.h"
+#include <QPushButton>
 
-AddItemDialog::AddItemDialog(QWidget *parent) :
+AddItemDialog::AddItemDialog(QWidget *parent, bool isEdit) :
     QDialog(parent)
 {
     if (this->objectName().isEmpty())
         this->setObjectName(QStringLiteral("AddItemDialog"));
     this->resize(400, 300);
+    QString dialogTitle = isEdit? tr("Edit Item"): tr("Add Item");
+    this->setWindowTitle(dialogTitle);
 
     centralWidget = new QWidget(this);
     centralWidget->setObjectName(QStringLiteral("AddDialogCentralWidget"));
@@ -18,11 +21,15 @@ AddItemDialog::AddItemDialog(QWidget *parent) :
 
     dateEdit = new QDateEdit(centralWidget);
     dateEdit->setObjectName(QStringLiteral("dateEdit"));
+    if(isEdit)
+    {
+        dateEdit->setEnabled(false);
+    }
 
     // item region
     itemLabel = new QLabel(centralWidget);
     itemLabel->setObjectName(QStringLiteral("label_2"));
-    itemLabel->setText(tr("Date"));
+    itemLabel->setText(tr("Item"));
 
     plainTextEdit = new QPlainTextEdit(centralWidget);
     plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
@@ -32,6 +39,11 @@ AddItemDialog::AddItemDialog(QWidget *parent) :
     buttonBox->setObjectName(QStringLiteral("buttonBox"));
     buttonBox->setOrientation(Qt::Horizontal);
     buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
+    if(!isEdit)
+    {
+        // for add mode, it is empty for plainTextEdit. ok button should be insensitive.
+        OnTextChanged();
+    }
 
     //layout
     dateHLayout = new QHBoxLayout();
@@ -52,9 +64,18 @@ AddItemDialog::AddItemDialog(QWidget *parent) :
     verticalLayout->addWidget(buttonBox);
 
     // signal and slot
-    QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    QObject::connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    QObject::connect(buttonBox, SIGNAL(accepted()), this->parent(), SLOT(OnAddItemCommit()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    if(isEdit)
+    {
+        QObject::connect(buttonBox, SIGNAL(accepted()), this->parent(), SLOT(OnEditItemCommit()));
+    }
+    else
+    {
+        QObject::connect(buttonBox, SIGNAL(accepted()), this->parent(), SLOT(OnAddItemCommit()));
+    }
+    // plainTextEdit controls ok button sensitivity
+    connect(plainTextEdit, SIGNAL(textChanged()), this, SLOT(OnTextChanged()));
 }
 
 AddItemDialog::~AddItemDialog()
@@ -74,4 +95,14 @@ QDate AddItemDialog::GetCurrentDateInDialog()
 QString AddItemDialog::GetItemText()
 {
     return plainTextEdit->toPlainText();
+}
+
+void AddItemDialog::SetItemText(QString &text)
+{
+    plainTextEdit->setPlainText(text);
+}
+
+void AddItemDialog::OnTextChanged()
+{
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!plainTextEdit->toPlainText().isEmpty());
 }

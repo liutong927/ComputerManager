@@ -5,6 +5,7 @@
 #include <QTextCharFormat>
 #include <QMessageBox>
 #include <QSqlError>
+#include <QModelIndex>
 
 enum ColumnIndex
 {
@@ -35,10 +36,12 @@ MainWindow::MainWindow(QWidget *parent)
     dailyArrangement->setObjectName(QStringLiteral("dailyArrangement"));
     dailyArrangement->setGeometry(490,10,500,450);
     dailyArrangement->setColumnWidth(0,450);
+    dailyArrangement->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // create pushbotton of Add/Delete/Search.
     addBtn = new QPushButton(tr("Add"),centralWidget);
     deleteBtn = new QPushButton(tr("Delete"),centralWidget);
+    deleteBtn->setEnabled(false);
     searchBtn = new QPushButton(tr("Search"),centralWidget);
 
     // layout
@@ -68,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent)
     // hide column only takes effect after setmodel.
     dailyArrangement->hideColumn(ColumnId);
     dailyArrangement->hideColumn(ColumnDate);
+    // set item column width to be same as whole table view.
+    dailyArrangement->setColumnWidth(ColumnItem,dailyArrangement->width());
+    //dailyArrangement->resizeRowsToContents();
 
     OnDateActivated();// show current date data.
     OnCalendarPageChanged(); // highlight current page arranged dates.
@@ -83,6 +89,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(calendarWidget,SIGNAL(currentPageChanged(int,int)),this,SLOT(OnCalendarPageChanged()));
     // button AddItem
     connect(addBtn,SIGNAL(clicked(bool)),this,SLOT(OnAddItemClicked()));
+    // button delete
+    // TODO: if no selection for item in dailyArrangement, delete button should be disabled.
+    connect(dailyArrangement,SIGNAL(clicked(QModelIndex)),this,SLOT(OnArrangementSelected()));
+    connect(deleteBtn,SIGNAL(clicked(bool)),this,SLOT(OnDeleteItemClicked()));
+    // edit item
+    // OnCurrentRowChanged signal is emit before tableview clicked signal.
+    // use double click to popup edit dialog.
+    connect(dailyArrangement,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(OnCurrentRowChanged()));
+    //connect(dailyArrangement->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(OnCurrentRowChanged()));
 }
 
 MainWindow::~MainWindow()
@@ -123,13 +138,69 @@ void MainWindow::OnAddItemCommit()
     auto currentDate = addDlg->GetCurrentDateInDialog();
     auto itemString = addDlg->GetItemText();
 
-    if(AddRecordToDB(currentDate, itemString))
+    if(AddRecordInDB(currentDate, itemString))
     {
         // issue: when focus is still on tableview, calendarwidget does not get updated immediately.
         // so here set focus to calendar firstly.
         calendarWidget->setFocus();
         MarkDateArranged(currentDate);
     }
+}
+
+void MainWindow::OnEditItemCommit()
+{
+    bool isSuccess = false;
+    // current index should be selected Item index
+    QModelIndex modelIndex = dailyArrangement->currentIndex();
+    QString itemString = addDlg->GetItemText();
+    model->setData(modelIndex, itemString);
+
+    // only if item is not empty, we submit it.
+    if(!itemString.isNull() && !itemString.isEmpty())
+    {
+        isSuccess = model->submitAll();
+        if(!isSuccess)
+        {
+            auto error = model->lastError();
+            QMessageBox::critical(this, tr("SQL Error"), error.text());
+            model->revertAll();
+        }
+    }
+}
+
+void MainWindow::OnDeleteItemClicked()
+{
+    auto button = QMessageBox::question(this,tr("Delete"),tr("Are you sure to delete this item?"));
+    if(button == QMessageBox::Yes)
+    {
+        // only allow single deletion currently.
+        QModelIndex modelIndex = dailyArrangement->currentIndex();
+        model->removeRow(modelIndex.row());
+        model->submitAll();
+
+        // after deletion, reset delete button status.
+        if(!dailyArrangement->currentIndex().isValid())
+        {
+            deleteBtn->setEnabled(false);
+        }
+    }
+}
+
+void MainWindow::OnArrangementSelected()
+{
+    // if one item in dailyArrangement is selected, then "delete" button is enabled.
+    deleteBtn->setEnabled(true);
+}
+
+void MainWindow::OnCurrentRowChanged()
+{
+    // this slot is to pop up "Edit Item" dialog.
+    addDlg = new AddItemDialog(this, true);
+    addDlg->SetDate(calendarWidget->selectedDate());
+    QModelIndex modelIndex = dailyArrangement->currentIndex();
+    QVariant currentData = model->data(modelIndex);
+    addDlg->SetItemText(currentData.toString());
+    addDlg->show();
 }
 
 bool MainWindow::PopulateDate(QDate& date)
@@ -143,7 +214,7 @@ bool MainWindow::PopulateDate(QDate& date)
     return (model->rowCount() != 0);
 }
 
-bool MainWindow::AddRecordToDB(const QDate& date, const QString& itemString)
+bool MainWindow::AddRecordInDB(const QDate& date, const QString& itemString)
 {
     Q_ASSERT(date.isValid());
     bool isSuccess = false;
@@ -183,7 +254,8 @@ QVector<QDate> MainWindow::GetArrangedDatesOfMonth(QDate& date)
     QDate toDate(year,month,daysOfMonth);
 
 //    auto oldFilter = model->filter();
-//    model->setFilter(QObject::tr("Date >= '%1' and Date <= '%2'").arg(fromDate.toString(Qt::ISODate)).arg(toDate.toString(Qt::ISODate)));
+//    model->setFilter(QObject::tr("Date >= '%1' and Date <= '%2'")
+//        .arg(fromDate.toString(Qt::ISODate)).arg(toDate.toString(Qt::ISODate)));
 //    int rowCount = model->rowCount();
 //    QVector<QDate> dateVec;
 //    for(int row = 0; row < rowCount; ++row)

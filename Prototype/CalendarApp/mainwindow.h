@@ -24,10 +24,14 @@ public slots:
     void OnCalendarPageChanged();
     void OnAddItemClicked();
     void OnAddItemCommit();
+    void OnEditItemCommit();
+    void OnDeleteItemClicked();
+    void OnArrangementSelected();
+    void OnCurrentRowChanged();
 
 private:
     bool PopulateDate(QDate& date);
-    bool AddRecordToDB(const QDate& date, const QString& itemString);
+    bool AddRecordInDB(const QDate& date, const QString& itemString);
 
     void MarkDateArranged(QDate& date);
     QVector<QDate> GetArrangedDatesOfMonth(QDate& date);

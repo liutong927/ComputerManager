@@ -4,13 +4,17 @@ calendar App UI definitions:
 
 #daily arrangement widget
 1.use tabelwiget to display items of date? default is 5 items;
-2.can add/delete items;
-3.save daily arrangement to database;
-4.can search item by keywords, show ordering items in a pop-up list widget, click item can goto that date.
-5.click date to goto each daily arrangment of that date;
+2.can add/edit/delete items to database;
+3.can search item by keywords, show ordering items in a pop-up list widget, click item can goto that date.
+4.click date to goto each daily arrangment of that date;
+5.to mark date in calendar widget if it has non-empty arrangment;
 6.can set reminder of item;
-7.to mark date in calendar widget if it has non-empty arrangment;
-8.can export selected item in some format to e-mail;
+7.can export selected item in some format to e-mail;
+
+#unsolved issues:
+1.table view item column word wrapp cannot show all contents;
+2.delete button is sensitive when select one item and select blank region, it is not clear definition of
+  select item;
 
 #2018/05/17
 1.use QTableView to bind to data model which is database data in this case;
@@ -32,3 +36,11 @@ calendar App UI definitions:
 #2018/05/25
 1.Now sql table use Date as primary key, the unique constraint disallows to create multiple items for same date.
   use another primary key like index? Or do not use primary key at all?
+
+#2018/05/27
+1.edit on enter item block in table view is difficult to implement. the main difficulty is hard to find approriate signal
+  for enter table view cell. One possible maybe inherit QSQLQueryModel to override SetData method.
+  currently we just make double-click for pop up edit dialog(reuse additemdialog) to edit selected item.
+2.search should pop up dialog allows user to search by date/search by keywords.
+  search by date allows selecting date range to display all arrangements during this date range.
+  search by keywords display all arrangments matching that keywords.
