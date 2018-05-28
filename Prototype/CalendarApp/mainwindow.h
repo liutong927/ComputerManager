@@ -10,6 +10,7 @@
 #include <QSqlTableModel>
 #include <QPushButton>
 #include <additemdialog.h>
+#include <searchdialog.h>
 
 class MainWindow : public QMainWindow
 {
@@ -28,6 +29,7 @@ public slots:
     void OnDeleteItemClicked();
     void OnArrangementSelected();
     void OnCurrentRowChanged();
+    void OnSearchClicked();
 
 private:
     bool PopulateDate(QDate& date);
@@ -47,6 +49,7 @@ private:
     QPushButton* deleteBtn;
     QPushButton* searchBtn;
     AddItemDialog* addDlg;
+    SearchDialog* searchDlg;
 
     QSqlTableModel* model;
 };

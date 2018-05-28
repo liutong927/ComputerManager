@@ -10,6 +10,7 @@ calendar App UI definitions:
 5.to mark date in calendar widget if it has non-empty arrangment;
 6.can set reminder of item;
 7.can export selected item in some format to e-mail;
+8.go back to "today" functionality;
 
 #unsolved issues:
 1.table view item column word wrapp cannot show all contents;

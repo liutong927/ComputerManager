@@ -97,7 +97,11 @@ MainWindow::MainWindow(QWidget *parent)
     // OnCurrentRowChanged signal is emit before tableview clicked signal.
     // use double click to popup edit dialog.
     connect(dailyArrangement,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(OnCurrentRowChanged()));
-    //connect(dailyArrangement->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(OnCurrentRowChanged()));
+    //connect(dailyArrangement->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+    //this,SLOT(OnCurrentRowChanged()));
+
+    // button search
+    connect(searchBtn,SIGNAL(clicked(bool)),this,SLOT(OnSearchClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -201,6 +205,15 @@ void MainWindow::OnCurrentRowChanged()
     QVariant currentData = model->data(modelIndex);
     addDlg->SetItemText(currentData.toString());
     addDlg->show();
+}
+
+void MainWindow::OnSearchClicked()
+{
+    searchDlg = new SearchDialog(this);
+    QDate currentDate = QDate::currentDate();
+    QDate oneMonthAgoDate = currentDate.addDays(-30);
+    searchDlg->SetDateRange(oneMonthAgoDate, currentDate);
+    searchDlg->show();
 }
 
 bool MainWindow::PopulateDate(QDate& date)
