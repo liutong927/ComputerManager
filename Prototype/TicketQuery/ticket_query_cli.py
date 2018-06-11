@@ -79,13 +79,20 @@ class train_info_parser:
             # get train info match the input options.
             if train_type in self.query_options:
                 # transfter '' to string '--', the raw info may be ...||...
-                # todo: not work?
-                for train_info_elem in train_info:
-                    if train_info_elem is '':
-                        train_info_elem = '--'
+                # note: cannot op on list element like this, need to get its index.
+                #for train_info_elem in train_info:
+                #    if train_info_elem is '':
+                #        train_info_elem = '--'
+                for index, value in enumerate(train_info):
+                    if value is '':
+                        train_info[index] = '--'
 
-                train_start_station = train_info[6]
-                train_arrive_station = train_info[7]
+                #train_start_station = train_info[6]
+                #train_arrive_station = train_info[7]
+                # the raw train info station name is value in station_dict, need to get its key
+                train_start_station = [key for key, value in stations.items() if value == train_info[6]][0]
+                train_arrive_station = [key for key, value in stations.items() if value == train_info[7]][0]
+
                 train_start_time = train_info[8]
                 train_arrive_time = train_info[9]
                 train_duration = train_info[10]
@@ -113,3 +120,4 @@ class train_info_parser:
 
 if __name__ == '__main__':
     cli()
+
