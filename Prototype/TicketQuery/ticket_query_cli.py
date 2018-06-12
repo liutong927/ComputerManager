@@ -13,6 +13,11 @@ Options:
     -z          直达
 """
 
+import sys
+# print all sys path, adding dependent module path to allow exec in cli mode.
+#print(sys.path)
+sys.path.append('D:\\projects\\ToolSet\\Prototype\\TicketQuery\\venv\\lib\\site-packages')
+
 from docopt import docopt
 from station_dict import stations
 import requests
