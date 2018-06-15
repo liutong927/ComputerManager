@@ -1,9 +1,9 @@
+# a script to generate daily dishes from reading json file.
 import json
 import random
 
-
 # generate dinner from lists of unknown number.
-def generate_dinner(*args):
+def generate_dinner_args(*args):
     dinner = []
 
     for recipe_list in args:
@@ -14,40 +14,38 @@ def generate_dinner(*args):
 
     return dinner
 
-# but what if we want specify numbers of vegetables or meats.
-def generate_dinner_kargs(numVegetables=1, numMeats=1, **kwargs):
+# but what if we want specify numbers of vegetables or meats. so crete kwargs version function.
+def generate_dinner_kwargs(num_vegetables=1, num_meats=1, **kwargs):
     dinner = []
-
+    #print(kwargs)
 
     for key in kwargs.keys():
         recipes_list = [] # selected list in one loop.
+        # use random.sample here instead of random.choices since later can choose same element.
         if key == 'vegetables':
-            #todo: seems still not choose 2 different dish.
-            recipes_list = random.choices(kwargs[key], k=numVegetables)
+            recipes_list = random.sample(kwargs[key], k=num_vegetables)
         elif key == 'meats':
-            recipes_list = random.choices(kwargs[key], k=numMeats)
+            recipes_list = random.sample(kwargs[key], k=num_meats)
         else:
-            recipes_list = random.choices(kwargs[key], k=1)
+            recipes_list = random.sample(kwargs[key], k=1)
 
         for selected_recipe in recipes_list:
             dinner.append(selected_recipe)
-            #todo:still have duplicates for supper.also has ValueError for x not in the list.
-            kwargs[key].remove(selected_recipe)
+            if selected_recipe in kwargs[key]:
+                kwargs[key].remove(selected_recipe)
 
     return dinner
 
 # generate one day dinner, no duplicates!
 def generate_daily_dinner(vegetables, meats, soups):
     # daily dinner should have no duplicates. pass list reference.
-    #lunch = generate_dinner(vegetables, meats, soups)
-    #supper = generate_dinner(vegetables, meats, soups)
+    #lunch = generate_dinner_args(vegetables, meats, soups)
+    #supper = generate_dinner_args(vegetables, meats, soups)
 
-    lunch = generate_dinner_kargs(1, 2, vegetables=vegetables, meats=meats, soups=soups)
-    supper = generate_dinner_kargs(1, 2, vegetables=vegetables, meats=meats, soups=soups)
+    lunch = generate_dinner_kwargs(1, 2, vegetables=vegetables, meats=meats, soups=soups)
+    supper = generate_dinner_kwargs(1, 2, vegetables=vegetables, meats=meats, soups=soups)
 
     daily_dinner = {'lunch': lunch, 'supper': supper}
-    print(daily_dinner)
-
     return daily_dinner
 
 
@@ -58,6 +56,6 @@ if __name__ == '__main__':
     vegetables = recipes['素菜']
     meats = recipes['荤菜']
     soups = recipes['汤']
-    print(vegetables, meats, soups, sep='\n')
+    print('素菜=', vegetables, '荤菜=', meats, '汤=', soups, sep='\n')
 
-    generate_daily_dinner(vegetables, meats, soups)
+    print('Today\'s dinner=', generate_daily_dinner(vegetables, meats, soups))
